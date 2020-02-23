@@ -81,7 +81,7 @@ const useStyles = makeStyles({
 const evaluateDebounced = _.debounce((code: string, entry: any) => {
   try {
     const r = Babel.transform(
-      'const entry = JSON.parse(' +
+      'const __entry = JSON.parse(' +
         JSON.stringify(entry) +
         ');\n' +
         code +
@@ -101,7 +101,7 @@ const evaluateDebounced = _.debounce((code: string, entry: any) => {
             return this.props.children;
           }
         }` +
-        "\n;\n ReactDOM.render(<ErrorBoundary><Template /></ErrorBoundary>, document.getElementById('result'));",
+        "\n;\n ReactDOM.render(<ErrorBoundary><Template entry={__entry} /></ErrorBoundary>, document.getElementById('result'));",
       {
         presets: ['es2015'],
         plugins: ['transform-react-jsx', 'proposal-class-properties'],
@@ -116,7 +116,7 @@ const evaluateDebounced = _.debounce((code: string, entry: any) => {
 
 export default function App() {
   const [code, setCode] = useState(
-    'const Template = () => <h1>Hello EAN <i>{entry.ean}</i></h1>;'
+    'const Template = ({ entry }) => <h1>Hello EAN <i>{entry.ean}</i></h1>;'
   );
   const [entry, setEntry] = useState('{ "ean": "12345678901112" }');
   const classes = useStyles();
