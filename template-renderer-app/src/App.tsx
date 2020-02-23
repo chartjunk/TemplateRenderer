@@ -191,80 +191,84 @@ export default function App() {
     [entry]
   );
 
-  return (
-    <>
-      <CssBaseline />
-      <AppBar position="relative">
-        <Toolbar>
-          {/* <CameraIcon className={classes.icon} /> */}
-          <Typography variant="h6" color="inherit" noWrap>
-            TemplateRenderer
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <main className={classes.container}>
-        <Grid
-          container
-          direction="row"
-          className={classes.panelContainerLeftRight}
-        >
-          <Grid item className={classes.panelLeft + ' panel-left'}>
-            <Grid
-              container
-              direction="column"
-              className={classes.panelContainerTopBottom}
-            >
-              <Grid item className={classes.panelTopLeft + ' panel-top-left'}>
-                <div className={classes.editorArea}>
-                  <Editor
-                    value={code}
-                    onValueChange={handleCodeChange}
-                    highlight={highlightCode}
-                    className={classes.editorContainer}
-                    padding={10}
-                  />
-                </div>
-              </Grid>
+  const result = useMemo(
+    () => (
+      <>
+        <CssBaseline />
+        <AppBar position="relative">
+          <Toolbar>
+            {/* <CameraIcon className={classes.icon} /> */}
+            <Typography variant="h6" color="inherit" noWrap>
+              TemplateRenderer
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <main className={classes.container}>
+          <Grid
+            container
+            direction="row"
+            className={classes.panelContainerLeftRight}
+          >
+            <Grid item className={classes.panelLeft + ' panel-left'}>
               <Grid
-                item
-                className={classes.splitterTopBottom + ' splitter-top-bottom'}
-                style={{ height: '10px', background: 'silver' }}
-              />
-              <Grid
-                item
-                className={classes.panelBottomLeft + ' panel-bottom-left'}
+                container
+                direction="column"
+                className={classes.panelContainerTopBottom}
               >
-                <div className={classes.editorArea}>
-                  <Editor
-                    value={entry}
-                    onValueChange={handleEntryChange}
-                    highlight={highlightEntry}
-                    className={classes.editorContainer}
-                    padding={10}
-                  />
-                </div>
+                <Grid item className={classes.panelTopLeft + ' panel-top-left'}>
+                  <div className={classes.editorArea}>
+                    <Editor
+                      value={code}
+                      onValueChange={handleCodeChange}
+                      highlight={highlightCode}
+                      className={classes.editorContainer}
+                      padding={10}
+                    />
+                  </div>
+                </Grid>
+                <Grid
+                  item
+                  className={classes.splitterTopBottom + ' splitter-top-bottom'}
+                  style={{ height: '10px', background: 'silver' }}
+                />
+                <Grid
+                  item
+                  className={classes.panelBottomLeft + ' panel-bottom-left'}
+                >
+                  <div className={classes.editorArea}>
+                    <Editor
+                      value={entry}
+                      onValueChange={handleEntryChange}
+                      highlight={highlightEntry}
+                      className={classes.editorContainer}
+                      padding={10}
+                    />
+                  </div>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid
-            item
-            className={classes.splitterLeftRight + ' splitter-left-right'}
-            style={{ width: '10px', background: 'silver' }}
-          />
-          <Grid
-            className={classes.panelRight + ' panel-right'}
-            style={{ flexGrow: 1, background: 'white' }}
-          >
-            <div
-              id="result"
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
+            <Grid
+              item
+              className={classes.splitterLeftRight + ' splitter-left-right'}
+              style={{ width: '10px', background: 'silver' }}
             />
+            <Grid
+              className={classes.panelRight + ' panel-right'}
+              style={{ flexGrow: 1, background: 'white' }}
+            >
+              <div
+                id="result"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </main>
-    </>
+        </main>
+      </>
+    ),
+    [code, setCode, entry, setEntry]
   );
+  return <>{result}</>;
 }
