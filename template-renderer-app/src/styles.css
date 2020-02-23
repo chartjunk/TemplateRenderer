@@ -22,3 +22,8 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* hide react overlay in dev mode, because debounced transpiling on the fly leads to lots of false positives */
+iframe {
+  display: none;
+}

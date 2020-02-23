@@ -12,7 +12,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Editor from 'react-simple-code-editor';
 import Highlight, { defaultProps } from 'prism-react-renderer';
-import theme from 'prism-react-renderer/themes/nightOwl';
+import nightOwl from 'prism-react-renderer/themes/nightOwl';
+import nightOwlLight from 'prism-react-renderer/themes/nightOwl';
 import { makeStyles, Grid } from '@material-ui/core';
 import $ from 'jquery';
 import 'jquery-resizable-dom';
@@ -32,7 +33,6 @@ const useStyles = makeStyles({
   editorContainer: {
     fontFamily: '"Dank Mono", "Fira Code", monospace',
     maxHeight: '100%',
-    ...(theme.plain as any),
   },
   editorArea: {
     overflow: 'auto',
@@ -42,6 +42,7 @@ const useStyles = makeStyles({
     flexDirection: 'row',
     overflow: 'hidden',
     xtouchAction: 'none',
+    height: '100%',
   },
   panelContainerTopBottom: {
     display: 'flex',
@@ -49,10 +50,9 @@ const useStyles = makeStyles({
     height: '100%',
   },
   panelLeft: {
-    width: '45%',
+    width: '33%',
     minHeight: '200px',
     minWidth: '200px',
-    whiteSpace: 'nowrap',
     height: '100%',
   },
   splitterLeftRight: {
@@ -63,57 +63,81 @@ const useStyles = makeStyles({
   },
   panelTopLeft: {
     width: '100%',
-    whiteSpace: 'nowrap',
     overflow: 'auto',
     height: '50%',
-    ...(theme.plain as any),
+    maxHeight: 'calc(100% - 10px)',
+    ...(nightOwl.plain as any),
   },
   splitterTopBottom: {
     cursor: 'row-resize',
   },
   panelBottomLeft: {
-    // flex: '1',
+    overflow: 'auto',
+    flex: '1',
+    ...(nightOwlLight.plain as any),
   },
 });
 
 const evaluateDebounced = _.debounce((code: string, entry: any) => {
   try {
     const r = Babel.transform(
-      'const entry = ' +
+      'const entry = JSON.parse(' +
         JSON.stringify(entry) +
-        ';\n' +
+        ');\n' +
         code +
-        "\n;\n ReactDOM.render(<Template />, document.getElementById('result'));",
+        `;\nclass ErrorBoundary extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = { hasError: false };
+          }
+        
+          static getDerivedStateFromError = error => ({ hasError: true });
+          componentDidCatch = (error, errorInfo) => {};
+        
+          render() {
+            if (this.state.hasError) {
+              return <h1>Error</h1>;
+            }
+            return this.props.children;
+          }
+        }` +
+        "\n;\n ReactDOM.render(<ErrorBoundary><Template /></ErrorBoundary>, document.getElementById('result'));",
       {
         presets: ['es2015'],
-        plugins: ['transform-react-jsx'],
+        plugins: ['transform-react-jsx', 'proposal-class-properties'],
       }
     );
+    console.log((r as any).code);
     eval((r as any).code);
   } catch (e) {
     return 'Error';
   }
-}, 1000);
+}, 500);
 
 export default function App() {
   const [code, setCode] = useState(
     'const Template = () => <h1>Hello EAN <i>{entry.ean}</i></h1>;'
   );
-  const [entry, setEntry] = useState("{ ean: '12345678901112' }");
+  const [entry, setEntry] = useState('{ "ean": "12345678901112" }');
   const classes = useStyles();
   const handleCodeChange = useCallback(
     (code: string) => {
       setCode(code);
       evaluateDebounced(code, entry);
     },
-    [code]
+    [code, entry]
   );
   const handleEntryChange = useCallback(
     (entry: string) => {
       setEntry(entry);
-      evaluateDebounced(code, JSON.parse(entry));
+      try {
+        evaluateDebounced(
+          code,
+          entry.replace(/[\\"']/g, '$&').replace(/\u0000/g, '\\0')
+        );
+      } catch (e) {}
     },
-    [entry]
+    [code, entry]
   );
   useEffect(() => {
     $('.panel-left').resizable({
@@ -125,9 +149,9 @@ export default function App() {
       resizeWidth: false,
     });
   });
-  const highlight = useCallback(
+  const highlightCode = useCallback(
     (code: string) => (
-      <Highlight {...defaultProps} code={code} theme={theme} language="jsx">
+      <Highlight {...defaultProps} code={code} theme={nightOwl} language="jsx">
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <>
             {tokens.map((line, i) => (
@@ -142,6 +166,29 @@ export default function App() {
       </Highlight>
     ),
     [code]
+  );
+  const highlightEntry = useCallback(
+    (code: string) => (
+      <Highlight
+        {...defaultProps}
+        code={code}
+        theme={nightOwlLight}
+        language="json"
+      >
+        {({ className, style, tokens, getLineProps, getTokenProps }) => (
+          <>
+            {tokens.map((line, i) => (
+              <div {...getLineProps({ line, key: i })}>
+                {line.map((token, key) => (
+                  <span {...getTokenProps({ token, key })} />
+                ))}
+              </div>
+            ))}
+          </>
+        )}
+      </Highlight>
+    ),
+    [entry]
   );
 
   return (
@@ -172,7 +219,7 @@ export default function App() {
                   <Editor
                     value={code}
                     onValueChange={handleCodeChange}
-                    highlight={highlight}
+                    highlight={highlightCode}
                     className={classes.editorContainer}
                     padding={10}
                   />
@@ -187,7 +234,15 @@ export default function App() {
                 item
                 className={classes.panelBottomLeft + ' panel-bottom-left'}
               >
-                Lul
+                <div className={classes.editorArea}>
+                  <Editor
+                    value={entry}
+                    onValueChange={handleEntryChange}
+                    highlight={highlightEntry}
+                    className={classes.editorContainer}
+                    padding={10}
+                  />
+                </div>
               </Grid>
             </Grid>
           </Grid>
@@ -198,31 +253,18 @@ export default function App() {
           />
           <Grid
             className={classes.panelRight + ' panel-right'}
-            style={{ flexGrow: 1 }}
+            style={{ flexGrow: 1, background: 'white' }}
           >
             <div
               id="result"
-              style={{ width: '100%', height: '100%', background: 'white' }}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
             />
           </Grid>
         </Grid>
       </main>
-      {/* Footer */}
-      {/* <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="textSecondary"
-          component="p"
-        >
-          Something here to give the footer a purpose!
-        </Typography>
-        <Copyright />
-      </footer> */}
-      {/* End footer */}
     </>
   );
 }
