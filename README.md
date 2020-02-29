@@ -16,33 +16,34 @@ const Template = ({ entry }) => (
     <div style={{
       display: 'flex',
       flexFlow: 'row nowrap',
-    }}>
-      <div style={{
-        display: 'flex',
-        flex: '0 0',
-        flexFlow: 'row-reverse',
-        textAlign: 'right',
-        borderStyle: 'none solid solid none',
-        padding: '10px 4px 10px 0',
-        borderWidth: '3px',
-        minWidth: '128px',
-      }}>
-        Saajan
-        <br/>tilinumero
-        <br/>Mottagarens
-        <br/>kontonummer
-      </div>
-      
+    }}>      
       {/* Account number boxes */}
       <div style={{
         display: 'flex',
-        flex: '1 1',
+        flex: '1',
       }}>
+      
+        <div style={{
+          display: 'flex',
+          flex: '0 0',
+          flexFlow: 'row-reverse',
+          textAlign: 'right',
+          borderStyle: 'none solid solid none',
+          padding: '10px 4px 10px 0',
+          borderWidth: '3px',
+          minWidth: '128px',
+        }}>
+          Saajan
+          <br/>tilinumero
+          <br/>Mottagarens
+          <br/>kontonummer
+        </div>
+      
         {/* IBAN-boksi*/}
         <div style={{
           display: 'flex',
           flexFlow: 'column',
-          flex: '1 1 50%',
+          flex: '1 1 0%',
           borderStyle: 'none solid solid none',
           borderWidth: '3px',
         }}>
@@ -64,7 +65,7 @@ const Template = ({ entry }) => (
         <div style={{
           display: 'flex',
           flexFlow: 'column',
-          flex: '1 1 50%',
+          flex: '0 1 calc(50% - 64px)',
           borderStyle: 'none none solid none',
           borderWidth: '3px',
         }}>
@@ -279,28 +280,30 @@ const Template = ({ entry }) => (
       display: 'flex',
       flexFlow: 'row nowrap',
     }}>
-      <div style={{
-        display: 'flex',
-        flex: '0 0',
-        flexFlow: 'row-reverse',
-        textAlign: 'right',
-        borderStyle: 'none solid solid none',
-        padding: '4px',
-        borderWidth: '3px',
-        minWidth: '128px',
-      }}>
-        Tilitä nro
-        <br/>Från konto nr
-      </div>
       
       <div style={{
         display: 'flex',
-        flex: '1 1',
+        flex: '1',
       }}>
+      
+        <div style={{
+          display: 'flex',
+          flex: '0 0',
+          flexFlow: 'row-reverse',
+          textAlign: 'right',
+          borderStyle: 'none solid solid none',
+          padding: '4px',
+          borderWidth: '3px',
+          minWidth: '128px',
+        }}>
+          Tilitä nro
+          <br/>Från konto nr
+        </div>
+        
         <div style={{
           display: 'flex',
           flexFlow: 'column',
-          flex: '1 1 50%',
+          flex: '1',
           borderStyle: 'none solid solid none',
           borderWidth: '3px',
         }} />
@@ -309,7 +312,7 @@ const Template = ({ entry }) => (
         <div style={{
           display: 'flex',
           flexFlow: 'row nowrap',
-          flex: '1 1 50%'
+          flex: '0 1 calc(50% - 64px)'
         }}>
           <div style={{
             display: 'flex',
