@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["Backend/Web/Web.csproj", "Web/"]
 # COPY ["Backend/ReactServer/ReactServer.csproj", "ReactServer/"]
 RUN dotnet restore "Web/Web.csproj"
-COPY . .
+COPY "Backend/" .
 WORKDIR "/src/Web"
 RUN dotnet build "Web.csproj" -c Release -o /app/build
 
